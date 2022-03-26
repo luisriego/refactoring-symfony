@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Condo index{% endblock %}
+
+{% block body %}
+    <h1>Condo index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>TaxCode</th>
+                <th>IsActive</th>
+                <th>CreatedOn</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for condo in condos %}
+            <tr>
+                <td>{{ condo.id }}</td>
+                <td>{{ condo.name }}</td>
+                <td>{{ condo.taxCode }}</td>
+                <td>{{ condo.isActive ? 'Yes' : 'No' }}</td>
+                <td>{{ condo.createdOn ? condo.createdOn|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_condo_show', {'id': condo.id}) }}">show</a>
+                    <a href="{{ path('app_condo_edit', {'id': condo.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_condo_new') }}">Create new</a>
+{% endblock %}

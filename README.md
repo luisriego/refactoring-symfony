@@ -39,7 +39,7 @@ This repository contains the basic configuration for a complete local environmen
     ###> doctrine/doctrine-bundle ###
     # DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
     #DATABASE_URL="mysql://root:root@codenip-php81-symfony54-mysql:3306/mysql_symfony?serverVersion=8.0"
-    DATABASE_URL="postgresql://user:passwd@codenip-php81-symfony54-postgres:5432/postgres_symfony?serverVersion=14&charset=utf8"
+    DATABASE_URL="postgresql://user:passwd@refactoring-symfony-postgres:5432/postgres_symfony?serverVersion=14&charset=utf8"
     ###< doctrine/doctrine-bundle ###
     
     ###> symfony/messenger ###
@@ -54,4 +54,5 @@ Happy coding!
 ### For testing
 - Insert phpunit testing with composer 'composer require --dev phpunit/phpunit symfony/test-pack'
 - Run `sf d:m:m -n --env=test` to apply migrations on test enviroment
+- For run tests: `php bin/phpunit`
 

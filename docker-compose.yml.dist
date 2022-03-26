@@ -33,12 +33,13 @@ services:
       XDEBUG_CLIENT_PORT: 9003
       PHP_IDE_CONFIG: serverName=docker-dev-env-for-symfony
     ports:
-      - '1000:8000'
+      - '1100:8000'
     networks:
       - refactoring-symfony-network
-  depends_on:
-      - refactoring-symfony-postgres
-      
+    depends_on:
+        - refactoring-symfony-postgres
+        - refactoring-symfony-mysql
+
   refactoring-symfony-postgres:
     container_name: refactoring-symfony-postgres
     image: postgres:14-alpine
@@ -62,24 +63,42 @@ services:
       MYSQL_DATABASE: mysql_symfony
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - refactoring-symfony-mysql-data:/var/lib/mysql
+      - refactoring-symfony-mysql-data:/var/lib/mysql/data
     networks:
       - refactoring-symfony-network
     command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
 
-  codenip-php81-symfony54-rabbit:
-    container_name: codenip-php81-symfony54-rabbitmq
+  refactoring-symfony-rabbit:
+    container_name: refactoring-symfony-rabbitmq
     image: rabbitmq:3-management-alpine
     ports:
       - '5672:5672'
       - '15672:15672'
     networks:
-      - codenip-php81-symfony54-network
+      - refactoring-symfony-network
+
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-13}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe}
+      POSTGRES_USER: ${POSTGRES_USER:-symfony}
+    volumes:
+      - db-data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
 
 volumes:
   refactoring-symfony-pgsql-data:
-  refactoring-symfony-db-data:
+
+###> doctrine/doctrine-bundle ###
+  db-data:
+###< doctrine/doctrine-bundle ###
+  refactoring-symfony-mysql-data:
 
 networks:
   refactoring-symfony-network:
-#    external: true
+    external: true
