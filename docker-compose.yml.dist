@@ -1,8 +1,8 @@
 version: '3.5'
 
 services:
-  docker-dev-env-for-symfony-web:
-    container_name: docker-dev-env-for-symfony-web
+  refactoring-symfony-web:
+    container_name: refactoring-symfony-web
     build:
       context: ./docker/nginx
       args:
@@ -12,12 +12,12 @@ services:
     volumes:
       - ./public:/appdata/www/public
     depends_on:
-      - docker-dev-env-for-symfony-be
+      - refactoring-symfony-be
     networks:
-      - docker-dev-env-for-symfony-network
+      - refactoring-symfony-network
 
-  docker-dev-env-for-symfony-be:
-    container_name: docker-dev-env-for-symfony-be
+  refactoring-symfony-be:
+    container_name: refactoring-symfony-be
     build:
       context: docker/php
       args:
@@ -35,12 +35,12 @@ services:
     ports:
       - '1000:8000'
     networks:
-      - docker-dev-env-for-symfony-network
+      - refactoring-symfony-network
   depends_on:
-      - docker-dev-env-for-symfony-postgres
+      - refactoring-symfony-postgres
       
-  docker-dev-env-for-symfony-postgres:
-    container_name: docker-dev-env-for-symfony-postgres
+  refactoring-symfony-postgres:
+    container_name: refactoring-symfony-postgres
     image: postgres:14-alpine
     ports:
       - '5432:5432'
@@ -49,12 +49,12 @@ services:
       POSTGRES_PASSWORD: passwd
       POSTGRES_DB: postgres_symfony
     volumes:
-      - docker-dev-env-for-symfony-pgsql-data:/var/lib/postgresql/data
+      - refactoring-symfony-pgsql-data:/var/lib/postgresql/data
     networks:
-      - docker-dev-env-for-symfony-network
+      - refactoring-symfony-network
 
-  docker-dev-env-for-symfony-mysql:
-    container_name: docker-dev-env-for-symfony-mysql
+  refactoring-symfony-mysql:
+    container_name: refactoring-symfony-mysql
     image: mysql:8.0.26
     ports:
       - '3336:3306'
@@ -62,9 +62,9 @@ services:
       MYSQL_DATABASE: mysql_symfony
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - docker-dev-env-for-symfony-mysql-data:/var/lib/mysql
+      - refactoring-symfony-mysql-data:/var/lib/mysql
     networks:
-      - docker-dev-env-for-symfony-network
+      - refactoring-symfony-network
     command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
 
   codenip-php81-symfony54-rabbit:
@@ -77,9 +77,9 @@ services:
       - codenip-php81-symfony54-network
 
 volumes:
-  docker-dev-env-for-symfony-pgsql-data:
-  docker-dev-env-for-symfony-db-data:
+  refactoring-symfony-pgsql-data:
+  refactoring-symfony-db-data:
 
 networks:
-  docker-dev-env-for-symfony-network:
+  refactoring-symfony-network:
 #    external: true
