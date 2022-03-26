@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\CondoRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
@@ -29,15 +31,33 @@ class Condo
     #[ORM\Column(type: 'datetime')]
     private ?\DateTime $createdOn;
 
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'condos')]
+    private ArrayCollection $users;
+
     public function __construct()
     {
         $this->id = Uuid::v4()->toRfc4122();
         $this->createdOn = new \DateTime();
+        $this->users = new ArrayCollection();
     }
 
-    public function getId(): ?string
+    public function getId(): string
     {
         return $this->id;
+    }
+
+    public function getCnpj(): ?string
+    {
+        return $this->cnpj;
+    }
+
+    public function setCnpj(?string $cnpj): void
+    {
+        if (!$this->validate_cnpj($cnpj)) {
+            throw new \Exception('CNPJ invalid');
+        }
+
+        $this->cnpj = $this->normalize($cnpj);
     }
 
     public function getName(): ?string
@@ -45,46 +65,112 @@ class Condo
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
-    public function getTaxCode(): ?string
-    {
-        return $this->taxCode;
-    }
-
-    public function setTaxCode(string $taxCode): self
-    {
-        $this->taxCode = $taxCode;
-
-        return $this;
-    }
-
-    public function getIsActive(): ?bool
+    public function isActive(): bool
     {
         return $this->isActive;
     }
 
-    public function setIsActive(bool $isActive): self
+    public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
-
-        return $this;
     }
 
-    public function getCreatedOn(): ?\DateTimeInterface
+    public function toggleActive(): void
+    {
+        $this->isActive = !$this->isActive;
+    }
+
+    public function getCreatedOn(): \DateTime
     {
         return $this->createdOn;
     }
 
-    public function setCreatedOn(\DateTimeInterface $createdOn): self
+    #[ORM\PrePersist]
+    private function setCreationDatetime(): void
     {
-        $this->createdOn = $createdOn;
+        $this->createdOn = new \DateTime();
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection|null
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addCondo($this);
+        }
 
         return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeCondo($this);
+        }
+
+        return $this;
+    }
+
+    public function containsUser(User $user): bool
+    {
+        return $this->users->contains($user);
+    }
+
+    public function __toString(): string
+    {
+        return $this->cnpj;
+    }
+
+    private function normalize(string $value): string
+    {
+        return preg_replace('/[^0-9]/', '', (string) $value);
+    }
+
+    private function validate_cnpj($cnpj)
+    {
+        $cnpj = preg_replace('/[^0-9]/', '', (string) $cnpj);
+
+        // Valida tamanho
+        if (strlen($cnpj) != 14)
+            return false;
+
+        // Verifica se todos os digitos são iguais
+        if (preg_match('/(\d)\1{13}/', $cnpj))
+            return false;
+
+        // Valida primeiro dígito verificador
+        for ($i = 0, $j = 5, $soma = 0; $i < 12; $i++)
+        {
+            $soma += $cnpj[$i] * $j;
+            $j = ($j == 2) ? 9 : $j - 1;
+        }
+
+        $resto = $soma % 11;
+
+        if ($cnpj[12] != ($resto < 2 ? 0 : 11 - $resto))
+            return false;
+
+        // Valida segundo dígito verificador
+        for ($i = 0, $j = 6, $soma = 0; $i < 13; $i++)
+        {
+            $soma += $cnpj[$i] * $j;
+            $j = ($j == 2) ? 9 : $j - 1;
+        }
+
+        $resto = $soma % 11;
+
+        return $cnpj[13] == ($resto < 2 ? 0 : 11 - $resto);
     }
 }
