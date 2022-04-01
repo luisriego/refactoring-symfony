@@ -21,10 +21,19 @@ class CondoController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\ORMException
+     */
     #[Route('/new', name: 'app_condo_new', methods: ['GET', 'POST'])]
     public function new(Request $request, CondoRepository $condoRepository): Response
     {
         $condo = new Condo();
+
+        if ($user = $this->getUser()) {
+            $condo->addUser($user);
+        }
+
         $form = $this->createForm(CondoType::class, $condo);
         $form->handleRequest($request);
 
@@ -42,6 +51,7 @@ class CondoController extends AbstractController
     #[Route('/{id}', name: 'app_condo_show', methods: ['GET'])]
     public function show(Condo $condo): Response
     {
+        echo $condo;
         return $this->render('condo/show.html.twig', [
             'condo' => $condo,
         ]);

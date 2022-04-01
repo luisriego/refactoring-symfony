@@ -1,0 +1,20 @@
+parameters: # password
+  testing_password_hash: $argon2i$v=19$m=16,t=2,p=1$cGFzc3dvcmQ$A9HKT/FCm9ft8VCFgT4rVw
+
+App\Entity\User:
+  User-1:
+    __construct:
+      createdOn: null
+    firstName: Luis
+    lastName: Riego
+    email: luis@api.com
+    password: <{testing_password_hash}>
+    isActive: true
+  User-another:
+    __construct:
+      createdOn: null
+    firstName: José
+    lastName: Montero
+    email: another@api.com
+    password: password
+    isActive: true

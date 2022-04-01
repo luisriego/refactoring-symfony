@@ -1,0 +1,15 @@
+App\Entity\Condo:
+  Condo-1:
+    __construct:
+      createdOn: null
+    taxCode: '14289531000150'
+    name: Luis Condo
+    addUser: '@User-1'
+    isActive: true
+  Condo-2:
+    __construct:
+      createdOn: null
+    taxCode: '14289531000150'
+    name: Luis Condo 2
+    addUser: '@User-1'
+    isActive: false

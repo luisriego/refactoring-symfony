@@ -32,7 +32,7 @@ class Condo
     private ?\DateTime $createdOn;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'condos')]
-    private ArrayCollection $users;
+    private Collection $users;
 
     public function __construct()
     {
@@ -46,18 +46,21 @@ class Condo
         return $this->id;
     }
 
-    public function getCnpj(): ?string
+    public function getTaxCode(): ?string
     {
-        return $this->cnpj;
+        return $this->taxCode;
     }
 
-    public function setCnpj(?string $cnpj): void
+    /**
+     * @throws \Exception
+     */
+    public function setTaxCode(?string $taxCode): void
     {
-        if (!$this->validate_cnpj($cnpj)) {
+        if (!$this->validate_cnpj($taxCode)) {
             throw new \Exception('CNPJ invalid');
         }
 
-        $this->cnpj = $this->normalize($cnpj);
+        $this->taxCode = $this->normalize($taxCode);
     }
 
     public function getName(): ?string

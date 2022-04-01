@@ -12,11 +12,9 @@ class CondoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('id')
             ->add('name')
             ->add('taxCode')
             ->add('isActive')
-            ->add('createdOn')
         ;
     }
 
